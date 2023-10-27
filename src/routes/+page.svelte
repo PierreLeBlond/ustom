@@ -6,9 +6,9 @@
   import Notes from "$lib/components/Notes.svelte";
   import arrow from "$lib/images/arrow.svg";
   import Rules from "$lib/components/Rules.svelte";
-  import Scores from "$lib/components/Scores.svelte";
+  import Scores from "$lib/components/scores/Scores.svelte";
   import { Drawer, getDrawerStore } from "@skeletonlabs/skeleton";
-  import { enhance } from "$app/forms";
+  import ScoreForm from "$lib/components/scores/ScoreForm.svelte";
 
   export let data: PageData;
 
@@ -29,17 +29,21 @@
     if (currentGuess.length >= data.lettersCount) {
       return;
     }
-
-    currentGuess += detail;
+    const firstLetter = data.partialWord.at(0);
+    currentGuess +=
+      currentGuess.length === 0 && firstLetter !== detail
+        ? data.partialWord.at(0) + detail
+        : detail;
   };
 
   const handleReturn = () => {
     if (currentGuess.length === 0) {
       return;
     }
-
     currentGuess = currentGuess.substring(0, currentGuess.length - 1);
   };
+
+  let ready = true;
 </script>
 
 <Drawer>
@@ -77,7 +81,9 @@
       linesCount={data.tryCounts}
       guess={currentGuess}
       guesses={data.guesses}
+      partialWord={data.partialWord}
       won={data.won}
+      bind:ready
     ></Grid>
   </section>
   <section class="hidden self-start lg:block">
@@ -89,29 +95,11 @@
       <div class="flex flex-col items-center text-sm">
         <Notes>{winningMessage[data.guesses.length - 1]}</Notes>
         {#if !data.scoreName && (data.scores.length < 10 || data.scores.some(({ score }) => data.guesses.length < score))}
-          <Notes>Tu es dans le top 10 !</Notes>
-          <Notes>Tu peux envoyer ton score :)</Notes>
-          <form
-            action={`?/score&iv=${data.iv}&encryptedWord=${data.encryptedWord}`}
-            method="POST"
-            class="flex flex-col items-center gap-y-4 pt-8"
-            use:enhance
-          >
-            <div class="flex flex-col">
-              <Notes>Ton nom ?</Notes>
-              <input
-                class="w-64 rounded border p-2 shadow"
-                type="text"
-                required
-                pattern={"[A-Za-z]{4,10}"}
-                name="name"
-              />
-            </div>
-            <input type="hidden" name="score" value={data.guesses.length} />
-            <button class="rounded-full border px-4 py-2 shadow"
-              >Envoyer mon score</button
-            >
-          </form>
+          <ScoreForm
+            score={data.guesses.length}
+            iv={data.iv}
+            encryptedWord={data.encryptedWord}
+          ></ScoreForm>
         {/if}
       </div>
     {:else if data.lost}
@@ -124,15 +112,16 @@
       <Keyboard
         on:input={handleInput}
         on:return={handleReturn}
-        disableInput={currentGuess.length === data.lettersCount}
-        disableReturn={currentGuess.length <= 1}
-        disableSubmit={currentGuess.length !== data.lettersCount}
+        disableInput={!ready || currentGuess.length === data.lettersCount}
+        disableReturn={!ready || currentGuess.length === 0}
+        disableSubmit={!ready || currentGuess.length !== data.lettersCount}
         inputAction={`?/input&iv=${data.iv}&encryptedWord=${data.encryptedWord}`}
         returnAction={`?/return&iv=${data.iv}&encryptedWord=${data.encryptedWord}`}
         submitAction={`?/submit&iv=${data.iv}&encryptedWord=${data.encryptedWord}`}
         wrongLetters={data.wrongLetters}
       >
         <input type="hidden" name="guess" value={currentGuess} />
+        <input type="hidden" name="partialWord" value={data.partialWord} />
       </Keyboard>
     {/if}
   </section>

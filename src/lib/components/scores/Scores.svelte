@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Notes from "./Notes.svelte";
+  import Notes from "../Notes.svelte";
 
   export let scores: { id: string; score: number }[];
   export let name: string | undefined;

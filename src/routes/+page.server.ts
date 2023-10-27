@@ -1,6 +1,7 @@
-import { compareWords } from "$lib/compareWords";
 import { decrypt } from "$lib/crypto/crypto";
 import { redis } from "$lib/redis";
+import { compareWords } from "$lib/util/compareWords";
+import { getPartialWord } from "$lib/util/getPartialWord";
 import { redirect } from "@sveltejs/kit";
 import { Leaderboard } from "redis-rank";
 import type { PageServerLoad } from "./$types";
@@ -17,11 +18,7 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
 
   const word = decrypt({ iv, encryptedMessage: encryptedWord });
 
-  const guess = cookies.get("guess") || word.at(0);
-
-  if (!guess) {
-    throw redirect(302, "/generate");
-  }
+  const guess = cookies.get("guess") || "";
 
   const serializedGuesses = cookies.get(`${encryptedWord}-guesses`);
 
@@ -37,17 +34,6 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
       })
     : [];
 
-  const wrongLetters = guesses
-    .flatMap((guess) => guess)
-    .filter(({ match }) => match === "x")
-    .map(({ letter }) => letter);
-
-  const uniqueWrongLetters = [...new Set(wrongLetters)];
-
-  const won = guesses.some((guess) =>
-    guess.every(({ match }) => match === "!"),
-  );
-
   const leaderboard = new Leaderboard(redis, `lb:${encryptedWord}`, {
     sortPolicy: "low-to-high",
     updatePolicy: "best",
@@ -57,13 +43,30 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
   const scores = await leaderboard.top(10);
   const scoreName = cookies.get("score");
 
+  const lettersCount = word.length;
+
+  // The word with "?" in place of all letter that hasn't been found yet
+  const partialWord =
+    word.at(0) + getPartialWord(lettersCount, guesses).substring(1);
+  const won = partialWord === word;
+
+  const wrongLetters = guesses
+    .flatMap((guess) => guess)
+    .filter(
+      ({ letter, match }) => match === "x" && !partialWord.includes(letter),
+    )
+    .map(({ letter }) => letter);
+
+  const uniqueWrongLetters = [...new Set(wrongLetters)];
+
   return {
     guess,
     guesses,
-    wrongLetters: uniqueWrongLetters,
-    lettersCount: word.length,
-    tryCounts: TRY_COUNTS,
+    lettersCount,
+    partialWord,
     won,
+    wrongLetters: uniqueWrongLetters,
+    tryCounts: TRY_COUNTS,
     lost: guesses.length === TRY_COUNTS,
     iv,
     encryptedWord,
@@ -76,10 +79,18 @@ export const actions = {
   input: async ({ request, cookies }) => {
     const data = await request.formData();
 
-    const letter = data.get("letter");
+    const letter = data.get("letter") as string;
     const guess = data.get("guess") as string;
+    const partialWord = data.get("partialWord") as string;
 
-    cookies.set("guess", guess + letter);
+    const firstLetter = partialWord.at(0) as string;
+
+    cookies.set(
+      "guess",
+      guess.length === 0 && firstLetter !== letter
+        ? partialWord.at(0) + letter
+        : guess + letter,
+    );
   },
   return: async ({ request, cookies }) => {
     const data = await request.formData();
