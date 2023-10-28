@@ -11,7 +11,7 @@
 
   export let partialWord: string;
 
-  export let won: boolean;
+  export let finished: boolean;
 
   export let ready: boolean = true;
 
@@ -22,7 +22,7 @@
     guesses.length > 0 ? (guesses.at(guesses.length - 1) as LetterGuess[]) : [];
 
   let currentGuess: LetterGuess[] = [];
-  $: if (won || !ready) {
+  $: if (finished || !ready) {
     currentGuess = [];
   } else if (guess === "") {
     // The user has not entered letter yet, let's display him all correct letters
@@ -40,9 +40,9 @@
   }
 
   $: remainingGuesses = [
-    ...new Array(linesCount - (guesses.length + (won || !ready ? 0 : 1))).fill([
-      ...new Array(columnsCount).fill({ letter: "", match: "" }),
-    ]),
+    ...new Array(
+      linesCount - (guesses.length + (finished || !ready ? 0 : 1)),
+    ).fill([...new Array(columnsCount).fill({ letter: "", match: "" })]),
   ];
 </script>
 

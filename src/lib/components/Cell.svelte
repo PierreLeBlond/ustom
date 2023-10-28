@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { fade } from "svelte/transition";
-
   export let letter: string | null;
   export let match: "?" | "!" | "x" | "";
 </script>

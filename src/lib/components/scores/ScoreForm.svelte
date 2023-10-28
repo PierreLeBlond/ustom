@@ -12,16 +12,19 @@
 <form
   action={`?/score&iv=${iv}&encryptedWord=${encryptedWord}`}
   method="POST"
-  class="flex flex-col items-center gap-y-4 pt-8"
+  class="flex flex-col items-center gap-y-4"
   use:enhance
 >
   <div class="flex flex-col">
     <Notes>Ton nom ?</Notes>
+    <p class="pb-2 text-xs">
+      <Notes>(minuscules, majuscules et espaces acceptées)</Notes>
+    </p>
     <input
       class="w-64 rounded border p-2 shadow"
       type="text"
       required
-      pattern={"[A-Za-z]{4,10}"}
+      pattern={"[A-Za-zÀ-ž]+[ ][A-Za-zÀ-ž]+"}
       name="name"
     />
   </div>

@@ -82,7 +82,7 @@
       guess={currentGuess}
       guesses={data.guesses}
       partialWord={data.partialWord}
-      won={data.won}
+      finished={data.won || data.lost}
       bind:ready
     ></Grid>
   </section>
@@ -91,8 +91,8 @@
   </section>
   <section></section>
   <section class="self-start">
-    {#if data.won}
-      <div class="flex flex-col items-center text-sm">
+    {#if data.won && ready}
+      <div class="flex flex-col items-center gap-y-4 text-sm">
         <Notes>{winningMessage[data.guesses.length - 1]}</Notes>
         {#if !data.scoreName && (data.scores.length < 10 || data.scores.some(({ score }) => data.guesses.length < score))}
           <ScoreForm
@@ -100,9 +100,13 @@
             iv={data.iv}
             encryptedWord={data.encryptedWord}
           ></ScoreForm>
+        {:else if data.scoreName}
+          <Notes>Ton score est publié !</Notes>
+        {:else}
+          <Notes>Malheureusement tu n'est pas dans le top 10 :(</Notes>
         {/if}
       </div>
-    {:else if data.lost}
+    {:else if data.lost && ready}
       <Notes>
         Oh non ! C'était ton dernier essai... ! Pour te consoler, voila un <Cookie
           class="inline h-4 w-4"
