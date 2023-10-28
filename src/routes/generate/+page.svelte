@@ -1,10 +1,10 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import Notes from "$lib/components/Notes.svelte";
-  import type { PageData } from "./$types";
+  import type { ActionData } from "./$types";
   import { clipboard } from "@skeletonlabs/skeleton";
 
-  export let data: PageData;
+  export let form: ActionData;
 </script>
 
 <main class="flex h-full w-full flex-col items-center">
@@ -12,32 +12,38 @@
     method="POST"
     class="flex w-full flex-col items-center justify-center gap-y-4 py-16 md:py-32"
   >
-    <Notes>Choisir un mot de 4 à 10 lettres</Notes>
+    <Notes>Choisir un mot de 6 à 10 lettres</Notes>
     <input
       class="w-64 rounded border p-2 shadow"
       type="text"
       required
-      pattern={"[A-Za-z]{4,10}"}
+      pattern={"[A-Za-z]{6,10}"}
       name="word"
     />
     <button class="rounded-full border px-4 py-2 shadow">Générer</button>
   </form>
 
-  {#if data.encryptedWord && data.iv}
-    <p class="pb-4">
-      <Notes>
-        Partie générée pour le mot '<span class="font-bold">{data.word}</span>'
-      </Notes>
-    </p>
-    <div class="font-ui flex justify-center gap-x-4">
+  {#if form && form.encryptedMessage && form.iv}
+    <Notes>
+      <p class="pb-4 text-center">
+        Partie générée pour le mot '<span class="font-bold">{form.word}</span>'
+      </p>
+      {#if !form.validWord}
+        <p class="pb-4 text-center text-orange-400">
+          Attention, ce mot n'est pas dans notre dictionnaire, <br />
+          il sera potentiellement plus difficile à trouver.
+        </p>
+      {/if}
+    </Notes>
+    <div class="flex justify-center gap-x-4 font-ui">
       <button
         class="rounded-full border px-4 py-2 shadow"
-        use:clipboard={`${$page.url.origin}?encryptedWord=${data.encryptedWord}&iv=${data.iv}`}
+        use:clipboard={`${$page.url.origin}?encryptedWord=${form.encryptedMessage}&iv=${form.iv}`}
         >Copier le lien</button
       >
       <a
         class="rounded-full border px-4 py-2 shadow"
-        href={`${$page.url.origin}?encryptedWord=${data.encryptedWord}&iv=${data.iv}`}
+        href={`${$page.url.origin}?encryptedWord=${form.encryptedMessage}&iv=${form.iv}`}
         >Jouer avec ce mot</a
       >
     </div>

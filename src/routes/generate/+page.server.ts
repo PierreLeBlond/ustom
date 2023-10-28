@@ -1,21 +1,5 @@
-import { decrypt, encrypt } from "$lib/crypto/crypto";
-import { redirect } from "@sveltejs/kit";
-
-export const load = ({ url }) => {
-  const encryptedWord = url.searchParams.get("encryptedWord");
-  const iv = url.searchParams.get("iv");
-
-  const word =
-    iv && encryptedWord
-      ? decrypt({ iv, encryptedMessage: encryptedWord })
-      : null;
-
-  return {
-    encryptedWord,
-    iv,
-    word,
-  };
-};
+import { isInDictionary } from "$lib/components/dictionary/isInDictionary.js";
+import { encrypt } from "$lib/crypto/crypto";
 
 export const actions = {
   default: async ({ request }) => {
@@ -25,6 +9,8 @@ export const actions = {
 
     const { iv, encryptedMessage } = encrypt(word.toLowerCase());
 
-    throw redirect(302, `generate?encryptedWord=${encryptedMessage}&iv=${iv}`);
+    const validWord = await isInDictionary(word);
+
+    return { word, iv, encryptedMessage, validWord };
   },
 };

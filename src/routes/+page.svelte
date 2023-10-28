@@ -2,7 +2,7 @@
   import Grid from "$lib/components/Grid.svelte";
   import Keyboard from "$lib/components/keyboard/Keyboard.svelte";
   import { Cookie, HelpCircle, Settings, Trophy } from "lucide-svelte";
-  import type { PageData } from "./$types";
+  import type { ActionData, PageData } from "./$types";
   import Notes from "$lib/components/Notes.svelte";
   import arrow from "$lib/images/arrow.svg";
   import Rules from "$lib/components/Rules.svelte";
@@ -11,6 +11,7 @@
   import ScoreForm from "$lib/components/scores/ScoreForm.svelte";
 
   export let data: PageData;
+  export let form: ActionData;
 
   const drawerStore = getDrawerStore();
 
@@ -113,6 +114,11 @@
         ></Cookie>.
       </Notes>
     {:else}
+      <Notes>
+        <p class="pb-4 text-center text-orange-500">
+          {form?.message ? form.message : ""}
+        </p>
+      </Notes>
       <Keyboard
         on:input={handleInput}
         on:return={handleReturn}

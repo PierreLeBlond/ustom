@@ -1,8 +1,9 @@
+import { isInDictionary } from "$lib/components/dictionary/isInDictionary";
 import { decrypt } from "$lib/crypto/crypto";
 import { redis } from "$lib/redis";
 import { compareWords } from "$lib/util/compareWords";
 import { getPartialWord } from "$lib/util/getPartialWord";
-import { redirect } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import { Leaderboard } from "redis-rank";
 import type { PageServerLoad } from "./$types";
 
@@ -113,7 +114,17 @@ export const actions = {
       throw redirect(302, "/generate");
     }
 
+    cookies.set("guess", "");
+
     const word = decrypt({ iv, encryptedMessage: encryptedWord });
+
+    const validWord = guess === word || (await isInDictionary(guess));
+
+    if (!validWord) {
+      return fail(400, {
+        message: "Ce mot n'est pas dans notre dictionnaire :/",
+      });
+    }
 
     const match = compareWords(word, guess);
 
@@ -122,7 +133,6 @@ export const actions = {
       `${encryptedWord}-guesses`,
       guesses ? `${guesses}/${guess}-${match}` : `${guess}-${match}`,
     );
-    cookies.set("guess", "");
   },
   score: async ({ request, url, cookies }) => {
     const data = await request.formData();

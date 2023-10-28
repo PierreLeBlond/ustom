@@ -12,7 +12,7 @@
       {#each scores as { id, score }}
         <div
           class="flex w-full justify-evenly"
-          class:text-orange-500={id === name}
+          class:text-blue-400={id === name}
         >
           <p>{id}</p>
           <p>{score}</p>
