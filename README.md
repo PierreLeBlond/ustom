@@ -1,28 +1,29 @@
-# create-svelte
+# ustom
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+This is a wordle clone, based on sverdle implementation.
 
-## Creating a project
+It features custom word creation and top 10 leaderboard per word !
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+Attention ! It only uses a french dictionnary. You can create a game with any string of length 4-10, but guesses will be verified against the dictionnary.
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
 ```bash
-npm run dev
+npm install
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+# start the server
+npm run dev
+```
+
+### Secrets
+
+You'll need to set environment variables in `.env.local`
+
+```
+ENCRYPTING_KEY="<your encryption key>"
+
+UPSTASH_REDIS_REST_URL="<your (probably) local redis rest url>"
+UPSTASH_REDIS_REST_TOKEN="<your (probably) local redis rest token>"
 ```
 
 ## Building
@@ -35,4 +36,13 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+## Deployment
+
+To deploy via fly.io, you'll need to set built time secrets. see [documentation](https://fly.io/docs/reference/build-secrets/) for more information.
+
+```bash
+flyctl deploy \
+  --build-secret ENCRYPTING_KEY="<your encryption key>" \
+  --build-secret UPSTASH_REDIS_REST_URL="<your redis rest url>" \
+  --build-secret UPSTASH_REDIS_REST_TOKEN="<your redis rest token>"
+```
