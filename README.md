@@ -2,6 +2,8 @@
 
 This is a wordle clone, based on sverdle implementation.
 
+Credits to https://framagit.org/JonathanMM/sutom for the french dictionary.
+
 It features custom word creation and top 10 leaderboard per word !
 
 Attention ! It only uses a french dictionnary. You can create a game with any string of length 4-10, but guesses will be verified against the dictionnary.
@@ -46,3 +48,10 @@ flyctl deploy \
   --build-secret UPSTASH_REDIS_REST_URL="<your redis rest url>" \
   --build-secret UPSTASH_REDIS_REST_TOKEN="<your redis rest token>"
 ```
+
+## Roadmap
+
+- Layout on very small screens
+- Server-side validation and error handling
+- Extend dictionary to english words
+- Sounds on submit
