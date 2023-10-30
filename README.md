@@ -38,17 +38,6 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-## Deployment
-
-To deploy via fly.io, you'll need to set built time secrets. see [documentation](https://fly.io/docs/reference/build-secrets/) for more information.
-
-```bash
-flyctl deploy \
-  --build-secret ENCRYPTING_KEY="<your encryption key>" \
-  --build-secret UPSTASH_REDIS_REST_URL="<your redis rest url>" \
-  --build-secret UPSTASH_REDIS_REST_TOKEN="<your redis rest token>"
-```
-
 ## Roadmap
 
 - Layout on very small screens
