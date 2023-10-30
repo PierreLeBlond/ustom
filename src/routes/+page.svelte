@@ -1,7 +1,7 @@
 <script lang="ts">
-  import Grid from "$lib/components/Grid.svelte";
+  import Grid from "$lib/components/grid/Grid.svelte";
   import Keyboard from "$lib/components/keyboard/Keyboard.svelte";
-  import { Cookie, HelpCircle, Settings, Trophy } from "lucide-svelte";
+  import { Cookie, HelpCircle, Settings, Trophy, X } from "lucide-svelte";
   import type { ActionData, PageData } from "./$types";
   import Notes from "$lib/components/Notes.svelte";
   import arrow from "$lib/images/arrow.svg";
@@ -48,7 +48,15 @@
 </script>
 
 <Drawer>
-  <div class="flex h-full justify-center overflow-y-hidden bg-stone-300 pt-8">
+  <div
+    class="flex h-full w-full flex-col items-center justify-start gap-y-8 overflow-y-hidden bg-stone-300 pt-8"
+  >
+    <button
+      class="rounded-full border p-2 shadow"
+      on:click={() => drawerStore.close()}
+    >
+      <X></X>
+    </button>
     {#if $drawerStore.id === "rules"}
       <Rules></Rules>
     {/if}
@@ -59,21 +67,31 @@
 </Drawer>
 
 <main
-  class="grid h-full w-full grid-cols-1 items-center justify-items-center lg:grid-cols-3"
+  class="grid h-full w-full grid-cols-1 items-center justify-items-center gap-y-4 lg:grid-cols-3"
 >
   <section class="hidden lg:block">
     <Rules></Rules>
   </section>
-  <section class="flex w-full justify-between px-8 lg:hidden">
+  <section class="flex w-64 justify-between px-8 lg:hidden">
     <button
       class="rounded-full border p-2 shadow"
-      on:click={() => drawerStore.open({ id: "rules", position: "left" })}
-      ><HelpCircle></HelpCircle></button
+      on:click={() =>
+        drawerStore.open({
+          id: "rules",
+          position: "left",
+          blur: "backdrop-blur-sm",
+          shadow: "shadow-xl",
+        })}><HelpCircle></HelpCircle></button
     >
     <button
       class="rounded-full border p-2 shadow"
-      on:click={() => drawerStore.open({ id: "scores", position: "right" })}
-      ><Trophy></Trophy></button
+      on:click={() =>
+        drawerStore.open({
+          id: "scores",
+          position: "right",
+          blur: "backdrop-blur-sm",
+          shadow: "shadow-xl",
+        })}><Trophy></Trophy></button
     >
   </section>
   <section>

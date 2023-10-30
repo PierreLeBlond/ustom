@@ -19,7 +19,7 @@
   <svelte:fragment slot="pageFooter">
     <Notes>
       <p
-        class="flex w-full items-center justify-center pb-4 text-center text-xs"
+        class="flex w-full items-center justify-center p-4 text-center text-xs"
       >
         Fait avec amour :) ->&nbsp;
         <a class="inline" href="https://github.com/PierreLeBlond/ustom"
