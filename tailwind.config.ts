@@ -18,6 +18,9 @@ const config = {
         ui: ["Ubuntu"],
         note: ["Virgil"],
       },
+      screens: {
+        xs: "340px",
+      },
     },
   },
   plugins: [

@@ -4,7 +4,7 @@
 </script>
 
 <div
-  class="flex h-7 w-7 items-center justify-center rounded border md:h-8 md:w-8"
+  class="xs:h-7 xs:w-7 flex h-6 w-6 items-center justify-center rounded border"
   class:text-stone-500={!highlighted}
   class:shadow={highlighted}
 >

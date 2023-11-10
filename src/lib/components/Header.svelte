@@ -1,9 +1,12 @@
 <script>
   import Notes from "./Notes.svelte";
+  import logo from "$lib/images/logo.svg";
 </script>
 
 <Notes>
-  <header class="w-full pt-4 text-center text-2xl text-blue-400 md:text-4xl">
-    <span class="text-4xl text-stone-200 md:text-6xl">C</span><span>ustom</span>
+  <header class="hidden w-full justify-center py-8 lg:flex">
+    <svg class="h-32 w-32">
+      <image xlink:href={logo} class="h-32 w-32" />
+    </svg>
   </header>
 </Notes>

@@ -52,9 +52,9 @@
     </div>
   {/each}
 
-  <div class="flex gap-x-1 pl-48 pt-2 md:pl-64">
+  <div class="xs:pl-48 flex gap-x-1 pl-32 pt-2">
     <button
-      class="flex h-7 items-center justify-center rounded border px-2 shadow disabled:text-stone-500 md:h-8"
+      class="xs:h-8 flex h-7 items-center justify-center rounded border px-2 shadow disabled:text-stone-500"
       on:click|preventDefault={() => dispatch("return")}
       on:keydown|preventDefault={() => dispatch("return")}
       tabindex={0}
@@ -65,7 +65,7 @@
     </button>
 
     <button
-      class="flex h-7 items-center justify-center rounded border px-8 shadow ring-1 ring-orange-500 disabled:text-stone-500 disabled:ring-0 md:h-8"
+      class="xs:h-8 flex h-7 items-center justify-center rounded border px-8 shadow ring-1 ring-orange-500 disabled:text-stone-500 disabled:ring-0"
       tabindex={0}
       disabled={disableSubmit}
     >

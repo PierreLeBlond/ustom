@@ -3,14 +3,18 @@
   import Notes from "$lib/components/Notes.svelte";
   import type { ActionData } from "./$types";
   import { clipboard } from "@skeletonlabs/skeleton";
+  import logo from "$lib/images/logo.svg";
 
   export let form: ActionData;
 </script>
 
-<main class="flex h-full w-full flex-col items-center">
+<main class="flex w-full flex-col items-center gap-y-4">
+  <svg class="flex h-32 w-16 py-8 lg:hidden">
+    <image xlink:href={logo} class="h-16 w-16" />
+  </svg>
   <form
     method="POST"
-    class="flex w-full flex-col items-center justify-center gap-y-4 py-16 md:py-32"
+    class="flex w-full flex-col items-center justify-center gap-y-4"
   >
     <Notes>Choisir un mot de 6 à 10 lettres</Notes>
     <input
