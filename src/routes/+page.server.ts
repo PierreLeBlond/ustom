@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
   const encryptedWord = url.searchParams.get("encryptedWord");
 
   if (!encryptedWord || !iv) {
-    throw redirect(302, "/generate");
+    redirect(302, "/generate");
   }
 
   const word = decrypt({ iv, encryptedMessage: encryptedWord });
@@ -91,6 +91,7 @@ export const actions = {
       guess.length === 0 && firstLetter !== letter
         ? partialWord.at(0) + letter
         : guess + letter,
+      { path: "/" },
     );
   },
   return: async ({ request, cookies }) => {
@@ -101,7 +102,7 @@ export const actions = {
       return;
     }
 
-    cookies.set("guess", guess.substring(0, guess.length - 1));
+    cookies.set("guess", guess.substring(0, guess.length - 1), { path: "/" });
   },
   submit: async ({ request, cookies, url }) => {
     const data = await request.formData();
@@ -111,10 +112,10 @@ export const actions = {
     const encryptedWord = url.searchParams.get("encryptedWord");
 
     if (!encryptedWord || !iv) {
-      throw redirect(302, "/generate");
+      redirect(302, "/generate");
     }
 
-    cookies.set("guess", "");
+    cookies.set("guess", "", { path: "/" });
 
     const word = decrypt({ iv, encryptedMessage: encryptedWord });
 
@@ -132,6 +133,7 @@ export const actions = {
     cookies.set(
       `${encryptedWord}-guesses`,
       guesses ? `${guesses}/${guess}-${match}` : `${guess}-${match}`,
+      { path: "/" },
     );
   },
   score: async ({ request, url, cookies }) => {
@@ -149,6 +151,6 @@ export const actions = {
 
     await leaderboard.update([{ id: name, value: Number(score) }]);
 
-    cookies.set("score", name);
+    cookies.set("score", name, { path: "/" });
   },
 };
