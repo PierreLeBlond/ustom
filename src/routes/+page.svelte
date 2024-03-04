@@ -10,6 +10,7 @@
   import Scores from "$lib/components/scores/Scores.svelte";
   import { Drawer, getDrawerStore } from "@skeletonlabs/skeleton";
   import ScoreForm from "$lib/components/scores/ScoreForm.svelte";
+  import { confetti } from "@neoconfetti/svelte";
 
   export let data: PageData;
   export let form: ActionData;
@@ -110,6 +111,7 @@
     ></Grid>
     {#if data.won && ready}
       <Notes>{winningMessage[data.guesses.length - 1]}</Notes>
+      <div use:confetti={{ colors: ["#BFDBFE", "#E7E5E4", "#FED7AA"] }}></div>
       {#if !data.scoreName && (data.scores.length < 10 || data.scores.some(({ score }) => data.guesses.length < score))}
         <ScoreForm
           score={data.guesses.length}
