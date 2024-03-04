@@ -24,18 +24,43 @@
     input: string;
     return: null;
   }>();
+
+  let form: HTMLFormElement;
 </script>
 
-<form method="POST" class="flex flex-col" action={submitAction} use:enhance>
+<svelte:window
+  on:keydown={(e) => {
+    e.stopPropagation();
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      dispatch("return");
+    }
+  }}
+  on:keypress={(e) => {
+    e.stopPropagation();
+    if (e.key === "Enter" && !disableSubmit) {
+      form.requestSubmit();
+    } else if (e.key >= "a" && e.key <= "z") {
+      dispatch("input", e.key);
+    }
+  }}
+/>
+
+<form
+  method="POST"
+  class="flex flex-col"
+  action={submitAction}
+  use:enhance
+  bind:this={form}
+>
   <slot />
-  {#each layout as line, index}
-    <div class="flex" style="padding-left: {index}em">
+  {#each layout as line, lineIndex}
+    <div class="flex" style="padding-left: {lineIndex}em">
       {#each line as letter, index}
         <button
           class="p-0.5"
           on:click|preventDefault={() => dispatch("input", letter)}
-          on:keydown|preventDefault={() => dispatch("input", letter)}
-          tabindex={index}
+          tabindex={10 * lineIndex + index + 1}
           formaction={inputAction}
           name="letter"
           value={letter}
@@ -52,12 +77,11 @@
     </div>
   {/each}
 
-  <div class="xs:pl-48 flex gap-x-1 pl-32 pt-2">
+  <div class="flex gap-x-1 pl-32 pt-2 xs:pl-48">
     <button
-      class="xs:h-8 flex h-7 items-center justify-center rounded border px-2 shadow disabled:text-stone-500"
+      class="flex h-7 items-center justify-center rounded border px-2 shadow disabled:text-stone-500 xs:h-8"
       on:click|preventDefault={() => dispatch("return")}
-      on:keydown|preventDefault={() => dispatch("return")}
-      tabindex={0}
+      tabindex={27}
       formaction={returnAction}
       disabled={disableReturn}
     >
@@ -65,8 +89,8 @@
     </button>
 
     <button
-      class="xs:h-8 flex h-7 items-center justify-center rounded border px-8 shadow ring-1 ring-orange-500 disabled:text-stone-500 disabled:ring-0"
-      tabindex={0}
+      class="flex h-7 items-center justify-center rounded border px-8 shadow ring-1 ring-orange-500 disabled:text-stone-500 disabled:ring-0 xs:h-8"
+      tabindex={28}
       disabled={disableSubmit}
     >
       <CornerDownLeft strokeWidth={1.5}></CornerDownLeft>

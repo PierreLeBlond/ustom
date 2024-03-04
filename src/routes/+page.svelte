@@ -136,9 +136,18 @@
       <Keyboard
         on:input={handleInput}
         on:return={handleReturn}
-        disableInput={!ready || currentGuess.length === data.lettersCount}
-        disableReturn={!ready || currentGuess.length === 0}
-        disableSubmit={!ready || currentGuess.length !== data.lettersCount}
+        disableInput={!ready ||
+          currentGuess.length === data.lettersCount ||
+          data.won ||
+          data.lost}
+        disableReturn={!ready ||
+          currentGuess.length === 0 ||
+          data.won ||
+          data.lost}
+        disableSubmit={!ready ||
+          currentGuess.length !== data.lettersCount ||
+          data.won ||
+          data.lost}
         inputAction={`?/input&iv=${data.iv}&encryptedWord=${data.encryptedWord}`}
         returnAction={`?/return&iv=${data.iv}&encryptedWord=${data.encryptedWord}`}
         submitAction={`?/submit&iv=${data.iv}&encryptedWord=${data.encryptedWord}`}
