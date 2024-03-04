@@ -24,7 +24,7 @@
       class="w-64 rounded border p-2 shadow"
       type="text"
       required
-      pattern={"[A-Za-zÀ-ž]+[ ][A-Za-zÀ-ž]+"}
+      pattern={"[A-Za-zÀ-ž]+([ ][A-Za-zÀ-ž]+)*"}
       name="name"
     />
   </div>

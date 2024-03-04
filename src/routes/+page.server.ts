@@ -42,7 +42,7 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
   });
 
   const scores = await leaderboard.top(10);
-  const scoreName = cookies.get("score");
+  const scoreName = cookies.get(`${encryptedWord}-score`);
 
   const lettersCount = word.length;
 
@@ -151,6 +151,6 @@ export const actions = {
 
     await leaderboard.update([{ id: name, value: Number(score) }]);
 
-    cookies.set("score", name, { path: "/" });
+    cookies.set(`${encryptedWord}-score`, name, { path: "/" });
   },
 };
