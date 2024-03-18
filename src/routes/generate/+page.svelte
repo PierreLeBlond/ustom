@@ -1,11 +1,15 @@
 <script lang="ts">
   import { page } from "$app/stores";
   import Notes from "$lib/components/Notes.svelte";
-  import type { ActionData } from "./$types";
+  import type { ActionData, PageData } from "./$types";
   import { clipboard } from "@skeletonlabs/skeleton";
   import logo from "$lib/images/logo.svg";
+  import { superForm } from "sveltekit-superforms";
 
   export let form: ActionData;
+  export let data: PageData;
+
+  const { form: superform, errors, enhance } = superForm(data.form);
 </script>
 
 <main class="flex w-full flex-col items-center gap-y-4">
@@ -15,15 +19,26 @@
   <form
     method="POST"
     class="flex w-full flex-col items-center justify-center gap-y-4"
+    use:enhance
   >
-    <Notes>Choisir un mot de 6 à 10 lettres</Notes>
+    <Notes>
+      <div class="text-xs sm:text-base">
+        Choisir un mot de 6 à 10 lettres, sans accents
+      </div>
+    </Notes>
     <input
-      class="w-64 rounded border p-2 shadow"
+      class="w-64 rounded border border-transparent p-2 shadow outline-none focus:border-blue-500"
+      class:!border-red-500={$errors.word}
       type="text"
-      required
-      pattern={"[A-Za-z]{6,10}"}
       name="word"
+      bind:value={$superform.word}
+      aria-invalid={$errors.word ? "true" : undefined}
     />
+    <Notes>
+      <p class="h-8 px-2 text-center text-xs text-red-500">
+        {$errors.word || ""}
+      </p>
+    </Notes>
     <button class="rounded-full border px-4 py-2 shadow">Générer</button>
   </form>
 
