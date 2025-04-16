@@ -1,33 +1,35 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
   import { fade } from "svelte/transition";
 
-  const dispatch = createEventDispatcher();
+  interface Props {
+    letter: string | null;
+    match: "?" | "!" | "x" | "";
+    columnsCount: number;
+    index: number;
+    onstart: () => void;
+    onend: () => void;
+  }
 
-  export let letter: string | null;
-  export let match: "?" | "!" | "x" | "";
-
-  export let columnsCount: number;
-  export let index: number;
+  let { letter, match, columnsCount, index, onstart, onend }: Props = $props();
 </script>
 
 <div
-  class=" relative flex h-7 w-7 items-center justify-center border text-sm xs:h-8 xs:w-8"
+  class=" xs:h-8 xs:w-8 relative flex h-7 w-7 items-center justify-center border text-sm"
 >
   <div
     class="absolute -z-10 h-full w-full"
     class:bg-orange-200={match === "?"}
     class:bg-blue-200={match === "!"}
     class:bg-stone-200={match === "x"}
-    in:fade|global={{ delay: index * 300, duration: 0 }}
-    on:introstart={() => {
+    in:fade|global={{ delay: index * 300, duration: 10 }}
+    onintrostart={() => {
       if (index === 0) {
-        dispatch("start");
+        onstart();
       }
     }}
-    on:introend={() => {
+    onintroend={() => {
       if (index === columnsCount - 1) {
-        dispatch("end");
+        onend();
       }
     }}
   ></div>

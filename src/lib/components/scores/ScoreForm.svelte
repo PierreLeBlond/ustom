@@ -2,9 +2,13 @@
   import { enhance } from "$app/forms";
   import Notes from "$lib/components/Notes.svelte";
 
-  export let iv: string;
-  export let encryptedWord: string;
-  export let score: number;
+  interface Props {
+    iv: string;
+    encryptedWord: string;
+    score: number;
+  }
+
+  let { iv, encryptedWord, score }: Props = $props();
 </script>
 
 <Notes>Tu es dans le top 10 !</Notes>
@@ -21,7 +25,7 @@
       <Notes>(minuscules, majuscules et espaces acceptées)</Notes>
     </p>
     <input
-      class="w-64 rounded border p-2 shadow"
+      class="w-64 rounded-sm border p-2 shadow-sm"
       type="text"
       required
       pattern={"[A-Za-zÀ-ž]+([ ][A-Za-zÀ-ž]+)*"}
@@ -29,6 +33,6 @@
     />
   </div>
   <input type="hidden" name="score" value={score} />
-  <button class="rounded-full border px-4 py-2 shadow">Envoyer mon score</button
+  <button class="rounded-full border px-4 py-2 shadow-sm">Envoyer mon score</button
   >
 </form>

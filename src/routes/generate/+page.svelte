@@ -2,14 +2,29 @@
   import { page } from "$app/stores";
   import Notes from "$lib/components/Notes.svelte";
   import type { ActionData, PageData } from "./$types";
-  import { clipboard } from "@skeletonlabs/skeleton";
   import logo from "$lib/images/logo.svg";
   import { superForm } from "sveltekit-superforms";
 
-  export let form: ActionData;
-  export let data: PageData;
+  interface Props {
+    form: ActionData;
+    data: PageData;
+  }
+
+  let { form, data }: Props = $props();
 
   const { form: superform, errors, enhance } = superForm(data.form);
+
+  const handleClipboard = () => {
+    if (!form) {
+      return;
+    }
+
+    navigator.clipboard
+      .writeText(
+        `${$page.url.origin}?encryptedWord=${form.encryptedMessage}&iv=${form.iv}`,
+      )
+      .then(() => {});
+  };
 </script>
 
 <main class="flex w-full flex-col items-center gap-y-4">
@@ -27,7 +42,7 @@
       </div>
     </Notes>
     <input
-      class="w-64 rounded border border-transparent p-2 shadow outline-none focus:border-blue-500"
+      class="w-64 rounded-sm border border-transparent p-2 shadow-sm outline-hidden focus:border-blue-500"
       class:!border-red-500={$errors.word}
       type="text"
       name="word"
@@ -39,7 +54,7 @@
         {$errors.word || ""}
       </p>
     </Notes>
-    <button class="rounded-full border px-4 py-2 shadow">Générer</button>
+    <button class="rounded-full border px-4 py-2 shadow-sm">Générer</button>
   </form>
 
   {#if form && form.encryptedMessage && form.iv}
@@ -54,14 +69,13 @@
         </p>
       {/if}
     </Notes>
-    <div class="flex justify-center gap-x-4 font-ui">
+    <div class="font-ui flex justify-center gap-x-4">
       <button
-        class="rounded-full border px-4 py-2 shadow"
-        use:clipboard={`${$page.url.origin}?encryptedWord=${form.encryptedMessage}&iv=${form.iv}`}
-        >Copier le lien</button
+        class="rounded-full border px-4 py-2 shadow-sm"
+        onclick={handleClipboard}>Copier le lien</button
       >
       <a
-        class="rounded-full border px-4 py-2 shadow"
+        class="rounded-full border px-4 py-2 shadow-sm"
         href={`${$page.url.origin}?encryptedWord=${form.encryptedMessage}&iv=${form.iv}`}
         >Jouer avec ce mot</a
       >

@@ -31,10 +31,10 @@ export const decrypt = ({
     Buffer.from(iv, "hex"),
   );
 
-  const decrpyted = Buffer.concat([
+  const decrypted = Buffer.concat([
     decipher.update(Buffer.from(encryptedMessage, "hex")),
     decipher.final(),
   ]);
 
-  return decrpyted.toString();
+  return decrypted.toString();
 };

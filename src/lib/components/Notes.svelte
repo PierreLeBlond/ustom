@@ -1,1 +1,9 @@
-<p class="font-note text-stone-600"><slot /></p>
+<script lang="ts">
+  interface Props {
+    children?: import("svelte").Snippet;
+  }
+
+  let { children }: Props = $props();
+</script>
+
+<div class="font-note text-stone-600">{@render children?.()}</div>

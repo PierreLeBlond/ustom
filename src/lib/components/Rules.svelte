@@ -2,7 +2,7 @@
   import Notes from "./Notes.svelte";
 </script>
 
-<div class="w-96 -rotate-2 p-8 text-sm">
+<div class="w-full -rotate-2 p-8 text-xs md:w-96 md:text-sm">
   <Notes>
     <div class="flex flex-col gap-y-4">
       <p class="w-full text-center">Rêgles du jeu</p>

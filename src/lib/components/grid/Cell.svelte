@@ -1,6 +1,10 @@
 <script lang="ts">
-  export let letter: string | null;
-  export let match: "?" | "!" | "x" | "";
+  interface Props {
+    letter: string | null;
+    match: "?" | "!" | "x" | "";
+  }
+
+  let { letter, match }: Props = $props();
 </script>
 
 <div

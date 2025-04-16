@@ -1,8 +1,12 @@
 <script lang="ts">
   import Notes from "../Notes.svelte";
 
-  export let scores: { id: string; score: number }[];
-  export let name: string | undefined;
+  interface Props {
+    scores: { id: string; score: number }[];
+    name: string | undefined;
+  }
+
+  let { scores, name }: Props = $props();
 </script>
 
 <div class="w-96 rotate-6 p-8 text-sm">

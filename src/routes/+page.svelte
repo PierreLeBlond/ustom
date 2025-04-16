@@ -8,14 +8,16 @@
   import logo from "$lib/images/logo.svg";
   import Rules from "$lib/components/Rules.svelte";
   import Scores from "$lib/components/scores/Scores.svelte";
-  import { Drawer, getDrawerStore } from "@skeletonlabs/skeleton";
+  import { Modal } from "@skeletonlabs/skeleton-svelte";
   import ScoreForm from "$lib/components/scores/ScoreForm.svelte";
   import { confetti } from "@neoconfetti/svelte";
 
-  export let data: PageData;
-  export let form: ActionData;
+  interface Props {
+    data: PageData;
+    form: ActionData;
+  }
 
-  const drawerStore = getDrawerStore();
+  let { data, form }: Props = $props();
 
   const winningMessage = [
     "T'aurais pas un peu triché toi ?",
@@ -26,17 +28,17 @@
     "Yes, sur le gong !",
   ];
 
-  $: currentGuess = data.guess;
+  let currentGuess = $derived(data.guess);
 
-  const handleInput = ({ detail }: CustomEvent<string>) => {
+  const handleInput = (letter: string) => {
     if (currentGuess.length >= data.lettersCount) {
       return;
     }
     const firstLetter = data.partialWord.at(0);
     currentGuess +=
-      currentGuess.length === 0 && firstLetter !== detail
-        ? data.partialWord.at(0) + detail
-        : detail;
+      currentGuess.length === 0 && firstLetter !== letter
+        ? data.partialWord.at(0) + letter
+        : letter;
   };
 
   const handleReturn = () => {
@@ -46,27 +48,53 @@
     currentGuess = currentGuess.substring(0, currentGuess.length - 1);
   };
 
-  let ready = true;
+  let ready = $state(true);
+
+  let isModalOpen = $state(false);
+  let modalId: "rules" | "scores" = $state("rules");
+
+  function openModal(id: "rules" | "scores") {
+    modalId = id;
+    isModalOpen = true;
+  }
+
+  function closeModal() {
+    isModalOpen = false;
+  }
 </script>
 
-<Drawer>
-  <div
-    class="flex h-full w-full flex-col items-center justify-start gap-y-8 overflow-y-hidden bg-stone-300 pt-8"
-  >
-    <button
-      class="rounded-full border p-2 shadow"
-      on:click={() => drawerStore.close()}
+<Modal
+  open={isModalOpen}
+  onOpenChange={(e: { open: boolean }) => (isModalOpen = e.open)}
+  contentBase="space-y-4 shadow-xl w-[90%] h-screen"
+  positionerJustify={modalId === "rules" ? "justify-start" : "justify-end"}
+  positionerAlign=""
+  positionerPadding=""
+  transitionsPositionerIn={{
+    x: modalId === "rules" ? -480 : 480,
+    duration: 200,
+  }}
+  transitionsPositionerOut={{
+    x: modalId === "rules" ? -480 : 480,
+    duration: 200,
+  }}
+>
+  {#snippet content()}
+    <div
+      class="flex h-full w-full flex-col items-center justify-start gap-y-8 overflow-y-hidden bg-stone-300 pt-8"
     >
-      <X></X>
-    </button>
-    {#if $drawerStore.id === "rules"}
-      <Rules></Rules>
-    {/if}
-    {#if $drawerStore.id === "scores"}
-      <Scores scores={data.scores} name={data.scoreName}></Scores>
-    {/if}
-  </div>
-</Drawer>
+      <button class="rounded-full border p-2 shadow-sm" onclick={closeModal}>
+        <X></X>
+      </button>
+      {#if modalId === "rules"}
+        <Rules></Rules>
+      {/if}
+      {#if modalId === "scores"}
+        <Scores scores={data.scores} name={data.scoreName}></Scores>
+      {/if}
+    </div>
+  {/snippet}
+</Modal>
 
 <main
   class="grid w-full grid-cols-1 justify-items-center gap-y-4 lg:h-full lg:grid-cols-3"
@@ -76,30 +104,18 @@
   </section>
   <section class="flex w-64 items-center justify-between px-8 pt-4 lg:hidden">
     <button
-      class="rounded-full border p-2 shadow"
-      on:click={() =>
-        drawerStore.open({
-          id: "rules",
-          position: "left",
-          blur: "backdrop-blur-sm",
-          shadow: "shadow-xl",
-        })}><HelpCircle></HelpCircle></button
+      class="rounded-full border p-2 shadow-sm"
+      onclick={() => openModal("rules")}><HelpCircle></HelpCircle></button
     >
     <svg class="h-16 w-16">
       <image xlink:href={logo} class="h-16 w-16" />
     </svg>
     <button
-      class="rounded-full border p-2 shadow"
-      on:click={() =>
-        drawerStore.open({
-          id: "scores",
-          position: "right",
-          blur: "backdrop-blur-sm",
-          shadow: "shadow-xl",
-        })}><Trophy></Trophy></button
+      class="rounded-full border p-2 shadow-sm"
+      onclick={() => openModal("scores")}><Trophy></Trophy></button
     >
   </section>
-  <section class="flex flex-col items-center gap-y-4 text-sm">
+  <section class="flex flex-col items-center gap-y-4 px-4 text-sm">
     <Grid
       columnsCount={data.lettersCount}
       linesCount={data.tryCounts}
@@ -136,8 +152,8 @@
         </p>
       </Notes>
       <Keyboard
-        on:input={handleInput}
-        on:return={handleReturn}
+        oninput={handleInput}
+        onreturn={handleReturn}
         disableInput={!ready ||
           currentGuess.length === data.lettersCount ||
           data.won ||
@@ -165,7 +181,7 @@
   </section>
   <section></section>
   <section></section>
-  <section class="flex w-full justify-end pr-8 pt-4 xl:pr-32">
+  <section class="flex w-full justify-end pt-4 pr-8 xl:pr-32">
     <div class="grid w-64 grid-cols-2 gap-y-4">
       <div class="col-span-2 -rotate-6 text-sm">
         <Notes>si tu veux générer une partie avec ton propre mot</Notes>
@@ -176,7 +192,7 @@
         </svg>
       </div>
       <div class="flex items-center justify-start pl-4">
-        <a class="rounded-full border p-2 shadow" href="/generate"
+        <a class="rounded-full border p-2 shadow-sm" href="/generate"
           ><Settings></Settings></a
         >
       </div>
