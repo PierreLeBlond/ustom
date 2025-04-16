@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { page } from "$app/stores";
   import Notes from "$lib/components/Notes.svelte";
   import type { ActionData, PageData } from "./$types";
   import logo from "$lib/images/logo.svg";
+  import { PUBLIC_BASE_URL, PUBLIC_BASE_PATH } from "$env/static/public";
   import { superForm } from "sveltekit-superforms";
 
   interface Props {
@@ -21,7 +21,7 @@
 
     navigator.clipboard
       .writeText(
-        `${$page.url.origin}?encryptedWord=${form.encryptedMessage}&iv=${form.iv}`,
+        `${PUBLIC_BASE_URL}${PUBLIC_BASE_PATH}?encryptedWord=${form.encryptedMessage}&iv=${form.iv}`,
       )
       .then(() => {});
   };
@@ -76,7 +76,7 @@
       >
       <a
         class="rounded-full border px-4 py-2 shadow-sm"
-        href={`${$page.url.origin}?encryptedWord=${form.encryptedMessage}&iv=${form.iv}`}
+        href={`${PUBLIC_BASE_URL}${PUBLIC_BASE_PATH}?encryptedWord=${form.encryptedMessage}&iv=${form.iv}`}
         >Jouer avec ce mot</a
       >
     </div>

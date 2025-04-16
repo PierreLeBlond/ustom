@@ -1,15 +1,32 @@
-name: Fly Deploy
+name: Deploy
 on:
   push:
     branches:
       - main
 jobs:
   deploy:
-    name: Deploy app
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --remote-only --build-secret ENCRYPTING_KEY=${{secrets.ENCRYPTING_KEY}} --build-secret UPSTASH_REDIS_REST_URL=${{secrets.UPSTASH_REDIS_REST_URL}} --build-secret UPSTASH_REDIS_REST_TOKEN=${{secrets.UPSTASH_REDIS_REST_TOKEN}}
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: build
         env:
-          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          PUBLIC_BASE_PATH: "/ustom"
+          PUBLIC_BASE_URL: "https://app.pierrelespingal.xyz"
+        run: npm run build
+
+      - name: Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          local-dir: ./build/
+          server-dir: ./app/ustom/
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          dry-run: ${{ env.ACT }}

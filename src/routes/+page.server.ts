@@ -1,3 +1,4 @@
+import { base } from "$app/paths";
 import { isInDictionary } from "$lib/components/dictionary/isInDictionary";
 import { decrypt } from "$lib/crypto/crypto";
 import { redis } from "$lib/redis";
@@ -14,7 +15,7 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
   const encryptedWord = url.searchParams.get("encryptedWord");
 
   if (!encryptedWord || !iv) {
-    redirect(302, "/generate");
+    redirect(302, `${base}/generate`);
   }
 
   const word = decrypt({ iv, encryptedMessage: encryptedWord });
@@ -112,7 +113,7 @@ export const actions = {
     const encryptedWord = url.searchParams.get("encryptedWord");
 
     if (!encryptedWord || !iv) {
-      redirect(302, "/generate");
+      redirect(302, `${base}/generate`);
     }
 
     cookies.set("guess", "", { path: "/" });

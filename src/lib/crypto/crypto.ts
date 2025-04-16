@@ -1,4 +1,4 @@
-import { ENCRYPTING_KEY } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 import crypto from "crypto";
 
 const algorithm = "aes-256-ctr";
@@ -8,7 +8,7 @@ const algorithm = "aes-256-ctr";
 export const encrypt = (message: string) => {
   const iv = crypto.randomBytes(16);
 
-  const cipher = crypto.createCipheriv(algorithm, ENCRYPTING_KEY, iv);
+  const cipher = crypto.createCipheriv(algorithm, env.ENCRYPTING_KEY, iv);
 
   const encrypted = Buffer.concat([cipher.update(message), cipher.final()]);
 
@@ -27,7 +27,7 @@ export const decrypt = ({
 }) => {
   const decipher = crypto.createDecipheriv(
     algorithm,
-    ENCRYPTING_KEY,
+    env.ENCRYPTING_KEY,
     Buffer.from(iv, "hex"),
   );
 

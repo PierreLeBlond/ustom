@@ -6,7 +6,7 @@ Credits to https://framagit.org/JonathanMM/sutom for the french dictionary.
 
 It features custom word creation and top 10 leaderboard per word !
 
-Attention ! It only uses a french dictionnary. You can create a game with any string of length 4-10, but guesses will be verified against the dictionnary.
+Attention ! It only uses a french dictionary. You can create a game with any string of length 4-10, but guesses will be verified against the dictionary.
 
 ## Developing
 
@@ -19,13 +19,11 @@ npm run dev
 
 ### Secrets
 
-You'll need to set environment variables in `.env.local`
+You'll need to set environment variables in `.env`
 
 ```
 ENCRYPTING_KEY="<your encryption key>"
-
-UPSTASH_REDIS_REST_URL="<your (probably) local redis rest url>"
-UPSTASH_REDIS_REST_TOKEN="<your (probably) local redis rest token>"
+REDIS_PATH="<path to the server redis socket>"
 ```
 
 ## Building

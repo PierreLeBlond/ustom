@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node build",
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "svelte-kit sync && vite build && cp server.js build/ && cp package.json build/ && cp package-lock.json build/",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -48,6 +48,7 @@
   },
   "type": "module",
   "dependencies": {
+    "dotenv": "^16.5.0",
     "ioredis": "^5.6.1",
     "lucide-svelte": "^0.488.0",
     "redis-rank": "^2.2.3"

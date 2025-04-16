@@ -11,6 +11,7 @@
   import { Modal } from "@skeletonlabs/skeleton-svelte";
   import ScoreForm from "$lib/components/scores/ScoreForm.svelte";
   import { confetti } from "@neoconfetti/svelte";
+  import { base } from "$app/paths";
 
   interface Props {
     data: PageData;
@@ -192,7 +193,7 @@
         </svg>
       </div>
       <div class="flex items-center justify-start pl-4">
-        <a class="rounded-full border p-2 shadow-sm" href="/generate"
+        <a class="rounded-full border p-2 shadow-sm" href={`${base}/generate`}
           ><Settings></Settings></a
         >
       </div>
