@@ -1,14 +1,20 @@
 <script lang="ts">
   import Grid from "$lib/components/grid/Grid.svelte";
   import Keyboard from "$lib/components/keyboard/Keyboard.svelte";
-  import { Cookie, HelpCircle, Settings, Trophy, X } from "lucide-svelte";
+  import {
+    CircleQuestionMark,
+    Cookie,
+    Settings,
+    Trophy,
+    X,
+  } from "lucide-svelte";
   import type { ActionData, PageData } from "./$types";
   import Notes from "$lib/components/Notes.svelte";
   import arrow from "$lib/images/arrow.svg";
   import logo from "$lib/images/logo.svg";
   import Rules from "$lib/components/Rules.svelte";
   import Scores from "$lib/components/scores/Scores.svelte";
-  import { Modal } from "@skeletonlabs/skeleton-svelte";
+  import { Dialog, Portal } from "@skeletonlabs/skeleton-svelte";
   import ScoreForm from "$lib/components/scores/ScoreForm.svelte";
   import { confetti } from "@neoconfetti/svelte";
   import { base } from "$app/paths";
@@ -28,6 +34,13 @@
     "Il était pas facile celui là.",
     "Yes, sur le gong !",
   ];
+
+  const animBackdrop =
+    "transition transition-discrete opacity-0 starting:data-[state=open]:opacity-0 data-[state=open]:opacity-100";
+  const animModalLeft =
+    "transition transition-discrete opacity-0 -translate-x-full starting:data-[state=open]:opacity-0 starting:data-[state=open]:-translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0";
+  const animModalRight =
+    "transition transition-discrete opacity-0 translate-x-full starting:data-[state=open]:opacity-0 starting:data-[state=open]:translate-x-full data-[state=open]:opacity-100 data-[state=open]:translate-x-0";
 
   let currentGuess = $derived(data.guess);
 
@@ -50,52 +63,7 @@
   };
 
   let ready = $state(true);
-
-  let isModalOpen = $state(false);
-  let modalId: "rules" | "scores" = $state("rules");
-
-  function openModal(id: "rules" | "scores") {
-    modalId = id;
-    isModalOpen = true;
-  }
-
-  function closeModal() {
-    isModalOpen = false;
-  }
 </script>
-
-<Modal
-  open={isModalOpen}
-  onOpenChange={(e: { open: boolean }) => (isModalOpen = e.open)}
-  contentBase="space-y-4 shadow-xl w-[90%] h-screen"
-  positionerJustify={modalId === "rules" ? "justify-start" : "justify-end"}
-  positionerAlign=""
-  positionerPadding=""
-  transitionsPositionerIn={{
-    x: modalId === "rules" ? -480 : 480,
-    duration: 200,
-  }}
-  transitionsPositionerOut={{
-    x: modalId === "rules" ? -480 : 480,
-    duration: 200,
-  }}
->
-  {#snippet content()}
-    <div
-      class="flex h-full w-full flex-col items-center justify-start gap-y-8 overflow-y-hidden bg-stone-300 pt-8"
-    >
-      <button class="rounded-full border p-2 shadow-sm" onclick={closeModal}>
-        <X></X>
-      </button>
-      {#if modalId === "rules"}
-        <Rules></Rules>
-      {/if}
-      {#if modalId === "scores"}
-        <Scores scores={data.scores} name={data.scoreName}></Scores>
-      {/if}
-    </div>
-  {/snippet}
-</Modal>
 
 <main
   class="grid w-full grid-cols-1 justify-items-center gap-y-4 lg:h-full lg:grid-cols-3"
@@ -104,17 +72,53 @@
     <Rules></Rules>
   </section>
   <section class="flex w-64 items-center justify-between px-8 pt-4 lg:hidden">
-    <button
-      class="rounded-full border p-2 shadow-sm"
-      onclick={() => openModal("rules")}><HelpCircle></HelpCircle></button
-    >
+    <Dialog>
+      <Dialog.Trigger class="rounded-full border p-2 shadow-sm"
+        ><CircleQuestionMark></CircleQuestionMark>
+      </Dialog.Trigger>
+      <Portal>
+        <Dialog.Backdrop
+          class="bg-surface-50-950/50 fixed inset-0 z-50 transition transition-discrete {animBackdrop}"
+        />
+        <Dialog.Positioner class="fixed inset-0 z-50 flex justify-start">
+          <Dialog.Content class="h-screen {animModalLeft}">
+            <div
+              class="flex h-full w-full flex-col items-center justify-start gap-y-8 overflow-y-hidden bg-stone-300 pt-8"
+            >
+              <Dialog.CloseTrigger class="rounded-full border p-2 shadow-sm">
+                <X></X>
+              </Dialog.CloseTrigger>
+              <Rules></Rules>
+            </div>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog>
     <svg class="h-16 w-16">
       <image xlink:href={logo} class="h-16 w-16" />
     </svg>
-    <button
-      class="rounded-full border p-2 shadow-sm"
-      onclick={() => openModal("scores")}><Trophy></Trophy></button
-    >
+    <Dialog>
+      <Dialog.Trigger class="rounded-full border p-2 shadow-sm">
+        <Trophy></Trophy>
+      </Dialog.Trigger>
+      <Portal>
+        <Dialog.Backdrop
+          class="bg-surface-50-950/50 fixed inset-0 z-50 transition transition-discrete {animBackdrop}"
+        />
+        <Dialog.Positioner class="fixed inset-0 z-50 flex justify-end">
+          <Dialog.Content class="h-screen {animModalRight}">
+            <div
+              class="flex h-full w-full flex-col items-center justify-start gap-y-8 overflow-y-hidden bg-stone-300 pt-8"
+            >
+              <Dialog.CloseTrigger class="rounded-full border p-2 shadow-sm">
+                <X></X>
+              </Dialog.CloseTrigger>
+              <Scores scores={data.scores} name={data.scoreName}></Scores>
+            </div>
+          </Dialog.Content>
+        </Dialog.Positioner>
+      </Portal>
+    </Dialog>
   </section>
   <section class="flex flex-col items-center gap-y-4 px-4 text-sm">
     <Grid
