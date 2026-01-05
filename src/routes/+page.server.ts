@@ -9,6 +9,15 @@ import { Leaderboard } from "redis-rank";
 import type { PageServerLoad } from "./$types";
 
 const TRY_COUNTS = 6;
+const COOKIES_OPTIONS: {
+  partitioned: boolean;
+  sameSite: "none";
+  path: string;
+} = {
+  partitioned: true,
+  sameSite: "none",
+  path: "/",
+};
 
 export const load: PageServerLoad = async ({ cookies, url }) => {
   const iv = url.searchParams.get("iv");
@@ -92,7 +101,7 @@ export const actions = {
       guess.length === 0 && firstLetter !== letter
         ? partialWord.at(0) + letter
         : guess + letter,
-      { path: "/", sameSite: "none" },
+      COOKIES_OPTIONS,
     );
   },
   return: async ({ request, cookies }) => {
@@ -103,10 +112,7 @@ export const actions = {
       return;
     }
 
-    cookies.set("guess", guess.substring(0, guess.length - 1), {
-      path: "/",
-      sameSite: "none",
-    });
+    cookies.set("guess", guess.substring(0, guess.length - 1), COOKIES_OPTIONS);
   },
   submit: async ({ request, cookies, url }) => {
     const data = await request.formData();
@@ -119,7 +125,7 @@ export const actions = {
       redirect(302, `${base}/generate`);
     }
 
-    cookies.set("guess", "", { path: "/", sameSite: "none" });
+    cookies.set("guess", "", COOKIES_OPTIONS);
 
     const word = decrypt({ iv, encryptedMessage: encryptedWord });
 
@@ -137,7 +143,7 @@ export const actions = {
     cookies.set(
       `${encryptedWord}-guesses`,
       guesses ? `${guesses}/${guess}-${match}` : `${guess}-${match}`,
-      { path: "/", sameSite: "none" },
+      COOKIES_OPTIONS,
     );
   },
   score: async ({ request, url, cookies }) => {
@@ -155,9 +161,6 @@ export const actions = {
 
     await leaderboard.update([{ id: name, value: Number(score) }]);
 
-    cookies.set(`${encryptedWord}-score`, name, {
-      path: "/",
-      sameSite: "none",
-    });
+    cookies.set(`${encryptedWord}-score`, name, COOKIES_OPTIONS);
   },
 };
